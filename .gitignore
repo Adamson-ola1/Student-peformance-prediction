@@ -1,1 +1,91 @@
+# ==========================================================
+# PYTHON
+# ==========================================================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Testing / cache
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+coverage.xml
+
+
+# ==========================================================
+# ENVIRONMENT VARIABLES / SECRETS
+# ==========================================================
+
 .env
+.env.*
+!.env.example
+
+# Frontend environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+# Keep environment template
+!frontend/.env.example
+
+# Docker environment
+docker/.env
+
+
+# ==========================================================
+# LOCAL TOOLS / IDE
+# ==========================================================
+
+.vscode/
+.idea/
+.sixth/
+
+*.swp
+*.swo
+*~
+
+# ==========================================================
+# JUPYTER
+# ==========================================================
+
+.ipynb_checkpoints/
+
+
+# ==========================================================
+# FRONTEND
+# ==========================================================
+
+frontend/node_modules/
+frontend/dist/
+
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+frontend/.vite/
+
+
+# ==========================================================
+# OPERATING SYSTEM
+# ==========================================================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# ==========================================================
+# TEMPORARY FILES
+# ==========================================================
+
+*.tmp
+*.temp
