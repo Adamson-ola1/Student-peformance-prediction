@@ -3,30 +3,32 @@
     "type": "RandomForestRegressor",
     "target": "final_gpa",
     "n_estimators": 200,
-    "r2_score": 0.9134,
-    "rmse": 0.1602,
-    "mae": 0.1297,
-    "oob_score": 0.9144,
+    "r2_score": 0.9141,
+    "rmse": 0.1656,
+    "mae": 0.1333,
+    "oob_score": 0.9127,
     "feature_importances": {
-      "age": 0.01657,
-      "attendance_rate": 0.132081,
-      "study_hours_per_week": 0.066903,
-      "previous_gpa": 0.468048,
-      "extracurricular_score": 0.026078,
-      "gender_Male": 0.003602,
-      "family_income_Low": 0.011374,
-      "family_income_Medium": 0.00331,
-      "study_efficiency_ratio": 0.050548,
-      "attendance_x_study": 0.221485
+      "age": 0.01885,
+      "attendance_rate": 0.154834,
+      "study_hours_per_week": 0.071662,
+      "previous_gpa": 0.444264,
+      "extracurricular_score": 0.03063,
+      "gender_Male": 0.004098,
+      "gender_string": 0.0,
+      "family_income_Low": 0.011152,
+      "family_income_Medium": 0.00389,
+      "family_income_string": 0.0,
+      "study_efficiency_ratio": 0.053612,
+      "attendance_x_study": 0.207008
     }
   },
   "classification_model": {
     "type": "RandomForestClassifier",
     "target": "pass_fail",
     "n_estimators": 200,
-    "accuracy": 0.9325,
-    "auc_roc": 0.9864,
-    "oob_score": 0.9256
+    "accuracy": 0.9483,
+    "auc_roc": 0.9897,
+    "oob_score": 0.9224
   },
   "feature_names": [
     "age",
@@ -35,10 +37,12 @@
     "previous_gpa",
     "extracurricular_score",
     "gender_Male",
+    "gender_string",
     "family_income_Low",
     "family_income_Medium",
+    "family_income_string",
     "study_efficiency_ratio",
     "attendance_x_study"
   ],
-  "feature_count": 10
+  "feature_count": 12
 }

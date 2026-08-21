@@ -1,5 +1,8 @@
 import pickle
 import os
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -13,6 +16,13 @@ from sklearn.metrics import (
     roc_auc_score, roc_curve
 )
 
+# sys.path.append(str(Path(__file__).resolve().parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+# Import configuration paths
+from config import CHARTS_DIR, MODELS_DIR, MODEL_DIR, ROOT_DIR
+
+
 print("\n" + "="*60)
 print("ML MODEL TRAINING & EVALUATION")
 print("="*60)
@@ -20,14 +30,7 @@ print("="*60)
 # ════════════════════════════════════════════════════════════════════════════
 # PATH CONFIGURATION
 # ════════════════════════════════════════════════════════════════════════════
- 
-BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
-MODELS_DIR = os.path.join(BASE_DIR, "models")
-CHARTS_DIR = os.path.join(BASE_DIR, "eda_charts")
- 
-os.makedirs(MODELS_DIR, exist_ok=True)
-os.makedirs(CHARTS_DIR, exist_ok=True)
- 
+  
 sns.set_theme(style="whitegrid")
 plt.rcParams.update({"figure.dpi": 150, "font.family": "Arial"})
  
@@ -37,18 +40,18 @@ plt.rcParams.update({"figure.dpi": 150, "font.family": "Arial"})
 # ════════════════════════════════════════════════════════════════════════════
  
 def load_pkl(filename):
-    path = os.path.join(MODELS_DIR, filename)
+    path = MODELS_DIR / filename
     with open(path, "rb") as f:
         return pickle.load(f)
  
 def save_pkl(obj, filename):
-    path = os.path.join(MODELS_DIR, filename)
+    path = MODELS_DIR / filename
     with open(path, "wb") as f:
         pickle.dump(obj, f)
     print(f"Saved: {path}")
  
 def save_chart(filename):
-    path = os.path.join(CHARTS_DIR, filename)
+    path = CHARTS_DIR / filename
     plt.savefig(path, bbox_inches="tight")
     plt.close()
     print(f"Saved: {path}")
@@ -58,22 +61,18 @@ def save_chart(filename):
 # STEP 1 — LOAD PREPROCESSED DATA
 # ════════════════════════════════════════════════════════════════════════════
 
-print("\n[1] Loading preprocessed data from models/ ...")
-
-def load_pkl(path):
-    with open(path, "rb") as f:
-        return pickle.load(f)
+print("\n[1] Loading preprocessed data from models/directory ...")
 
 try:
-    X_train_reg  = load_pkl("models/X_train_reg.pkl")
-    X_test_reg   = load_pkl("models/X_test_reg.pkl")
-    y_train_reg  = load_pkl("models/y_train_reg.pkl")
-    y_test_reg   = load_pkl("models/y_test_reg.pkl")
-    X_train_cls  = load_pkl("models/X_train_cls.pkl")
-    X_test_cls   = load_pkl("models/X_test_cls.pkl")
-    y_train_cls  = load_pkl("models/y_train_cls.pkl")
-    y_test_cls   = load_pkl("models/y_test_cls.pkl")
-    feature_names = load_pkl("models/feature_names.pkl")
+    X_train_reg  = load_pkl("X_train_reg.pkl")
+    y_train_reg  = load_pkl("y_train_reg.pkl")
+    X_test_reg   = load_pkl("X_test_reg.pkl")
+    y_test_reg   = load_pkl("y_test_reg.pkl")
+    X_train_cls  = load_pkl("X_train_cls.pkl")
+    X_test_cls   = load_pkl("X_test_cls.pkl")
+    y_train_cls  = load_pkl("y_train_cls.pkl")
+    y_test_cls   = load_pkl("y_test_cls.pkl")
+    feature_names = load_pkl("feature_names.pkl")
     print(f"Train size : {X_train_reg.shape[0]:,} rows")
     print(f"Test size  : {X_test_reg.shape[0]:,} rows")
     print(f"Features   : {len(feature_names)} columns")
@@ -127,9 +126,8 @@ else:
     print(" Consider: more data, deeper trees, or additional features.")
 
 # Save model
-with open("models/rf_regressor.pkl", "wb") as f:
-    pickle.dump(rf_reg, f)
-print("\n Saved: models/rf_regressor.pkl")
+save_pkl(rf_reg, "rf_regressor.pkl")
+
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -167,9 +165,7 @@ print("\nClassification Report:")
 print(classification_report(y_test_cls, preds_cls,
                              target_names=["Fail (0)", "Pass (1)"]))
 
-with open("models/rf_classifier.pkl", "wb") as f:
-    pickle.dump(rf_cls, f)
-print("Saved: models/rf_classifier.pkl")
+save_pkl(rf_cls, "rf_classifier.pkl")
 
 
 # ════════════════════════════════════════════════════════════════════════════

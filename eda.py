@@ -15,6 +15,7 @@ import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
+from config import CHARTS_DIR, MODELS_DIR, ROOT_DIR
 warnings.filterwarnings("ignore")
 
 
@@ -32,8 +33,7 @@ engine = create_engine(DATABASE_URL)
 # ─────────────────────────────────────────────────────────────
 # OUTPUT DIRECTORY FOR CHARTS
 # ─────────────────────────────────────────────────────────────
-os.makedirs("eda_charts", exist_ok=True)
-CHART_DIR = "eda_charts"
+CHART_DIR = CHARTS_DIR
 
 # ─────────────────────────────────────────────────────────────
 # PLOT STYLE

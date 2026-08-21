@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+import warnings
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -7,6 +11,12 @@ from sqlalchemy import text
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+# Import central config
+from config import CHARTS_DIR, MODEL_DIR, MODELS_DIR, ROOT_DIR
+warnings.filterwarnings("ignore")
 
 # Import SQLAlchemy engine
 from database import engine
@@ -263,24 +273,24 @@ print(f"X_test_scaled shape  : {X_test_scaled.shape}")
 
 print("\n[12] Saving preprocessed data and scaler as .pkl files ...")
 
-os.makedirs("models", exist_ok=True)
-
+os.makedirs(MODELS_DIR, exist_ok=True)
 objects_to_save = {
-    "models/X_train_reg.pkl":    X_train_reg,
-    "models/X_test_reg.pkl":     X_test_reg,
-    "models/y_train_reg.pkl":    y_train_reg,
-    "models/y_test_reg.pkl":     y_test_reg,
-    "models/X_train_cls.pkl":    X_train_cls,
-    "models/X_test_cls.pkl":     X_test_cls,
-    "models/y_train_cls.pkl":    y_train_cls,
-    "models/y_test_cls.pkl":     y_test_cls,
-    "models/X_train_scaled.pkl": X_train_scaled,
-    "models/X_test_scaled.pkl":  X_test_scaled,
-    "models/scaler.pkl":         scaler,
-    "models/feature_names.pkl":  list(X.columns),
+    "X_train_reg.pkl":    X_train_reg,
+    "X_test_reg.pkl":     X_test_reg,
+    "y_train_reg.pkl":    y_train_reg,
+    "y_test_reg.pkl":     y_test_reg,
+    "X_train_cls.pkl":    X_train_cls,
+    "X_test_cls.pkl":     X_test_cls,
+    "y_train_cls.pkl":    y_train_cls,
+    "y_test_cls.pkl":     y_test_cls,
+    "X_train_scaled.pkl": X_train_scaled,
+    "X_test_scaled.pkl":  X_test_scaled,
+    "scaler.pkl":         scaler,
+    "feature_names.pkl":  list(X.columns),
 }
 
-for path, obj in objects_to_save.items():
+for filename, obj in objects_to_save.items():
+    path = os.path.join(MODELS_DIR, filename)
     with open(path, "wb") as f:
         pickle.dump(obj, f)
     print(f"Saved: {path}")

@@ -10,26 +10,10 @@ from pathlib import Path
 # ─────────────────────────────────────────────
 ROOT_DIR        = Path(__file__).resolve().parent.parent
 MODELS_DIR      = ROOT_DIR / "models"
-MODEL_PATH      = MODELS_DIR / "student_performance_model.pkl"
-CLASSIFIER_PATH = MODELS_DIR / "student_performance_classifier.pkl"
+MODEL_PATH      = MODELS_DIR / "rf_regressor.pkl"
+CLASSIFIER_PATH = MODELS_DIR / "rf_classifier.pkl"
 META_PATH       = MODELS_DIR / "student_performance_model_meta.pkl"
-
-
-# ─────────────────────────────────────────────
-# FEATURE ORDER — must match training order
-# ─────────────────────────────────────────────
-FEATURE_ORDER = [
-    "age",
-    "attendance_rate",
-      "study_hours_per_week",
-      "previous_gpa",
-      "extracurricular_score",
-      "gender_Male",
-      "family_income_Low",
-      "family_income_Medium",
-      "study_efficiency_ratio",
-      "attendance_x_study"
-]
+FEATURE_NAMES_PATH = MODELS_DIR / "feature_names.pkl"
 
 
 # ─────────────────────────────────────────────
@@ -39,6 +23,7 @@ FEATURE_ORDER = [
 _regressor  = None
 _classifier = None
 _metadata   = None
+_feature_names = None
 
 
 # ─────────────────────────────────────────────
@@ -48,8 +33,8 @@ def _load_pickle(path: Path):
     if not path.exists():
         raise FileNotFoundError(
             f"\n[ERROR] Model file not found:\n{path}\n\n"
-            "Make sure save_model.py has been executed:\n"
-            "  python save_model.py"
+            "Make sure train.py has been executed:\n"
+            "  python train.py"
         )
     with open(path, "rb") as f:
         return pickle.load(f)
@@ -88,6 +73,12 @@ def get_metadata():
         print(f"  ✓ Metadata ready   : {time.time() - t:.2f}s")
     return _metadata
 
+def get_feature_names():
+    global _feature_names
+    if _feature_names is None:
+        _feature_names = _load_pickle(FEATURE_NAMES_PATH)
+    return _feature_names
+
 
 # ─────────────────────────────────────────────
 # CALLED FROM main.py on_startup
@@ -100,6 +91,7 @@ def load_models():
     get_regressor()
     get_classifier()
     get_metadata()
+    get_feature_names()
 
     print(f"  ✓ All models loaded in {time.time() - total:.2f}s total\n")
 
@@ -108,9 +100,35 @@ def load_models():
 # PREPARE INPUT FEATURES
 # ─────────────────────────────────────────────
 def prepare_features(data: dict) -> pd.DataFrame:
-    row = {f: float(data.get(f, 0)) for f in FEATURE_ORDER}
-    return pd.DataFrame([row], columns=FEATURE_ORDER)
-
+    feature_names = get_feature_names()
+    
+    df = pd.DataFrame([data])
+    
+    # Feature Engineering
+    df["study_efficiency_ratio"] = (
+        df["study_hours_per_week"].astype(float) /
+        df["age"].replace(0, np.nan)
+    ).round(4)
+    
+    df["attendance_x_study"] = (
+    (df["attendance_rate"] / 100.0) * df["study_hours_per_week"]
+    ).round(4)
+    
+    # Categorical Enconding
+    df = pd.get_dummies(
+        df,
+        columns=["gender", "family_income"],
+        drop_first=True,
+        dtype=int
+    )
+    
+    # Ensure all training features are present, fill missing dummies with 0, and match exact order
+    for col in feature_names:
+        if col not in df.columns:
+            df[col] = 0
+    
+    return df[feature_names]
+    
 # ─────────────────────────────────────────────
 # PREDICT GPA + PASS/FAIL
 # ─────────────────────────────────────────────
@@ -145,11 +163,12 @@ def get_model_info() -> dict:
     regressor  = get_regressor()
     classifier = get_classifier()
     metadata   = get_metadata()
+    feature_names = get_feature_names()
 
     return {
         "model_type":       type(regressor).__name__,
         "classifier_type":  type(classifier).__name__,
-        "feature_count":    len(FEATURE_ORDER),
-        "feature_order":    FEATURE_ORDER,
+        "feature_count":    len(feature_names),
+        "feature_order":    feature_names,
         "metadata":         metadata,
     }
